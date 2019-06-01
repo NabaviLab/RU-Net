@@ -6,9 +6,9 @@ clear all
 gpu_to_be_used=gpuDevice(1)
 model_folder= '../RU-NET/Models/';
 addpath(model_folder);
-if ~exist('model_name_mat','var'), model_name_mat='res_U_net_DinAbreastlast_R_U-NET500augment0_1_16Copy_of_Inbreast_Train_224.mat'; end     % defualt model folder
-if ~exist('imageSize','var'), imageSize=[640 640 3]; end     % defualt test folder
-if ~exist('test_folder_1','var'), test_folder_1='INBREAST_MASS_IMAGES/Copy_of_Inbreast_Train_224'; end     % defualt test folder
+if ~exist('model_name_mat','var'), model_name_mat='res_U_net_DinAbreastlast_R_U-NET500augment0_1_16Test_dataset.mat'; end     % defualt model folder
+if ~exist('imageSize','var'), imageSize=[640 640 3]; end     % defualt test folder   All_large_patches
+if ~exist('test_folder_1','var'), test_folder_1='Test_dataset'; end     % defualt test folder
 [f_model,model_name,ext_model]=fileparts(model_name_mat);
 mkdir('../RU-NET/Results',model_name);
 model_file=fullfile(model_folder,model_name_mat);
@@ -17,7 +17,6 @@ network=load (model_file);
 % net.Layers;
 classificationlayer='pixelLabels'; %change if diffrent
 % test images:
-test_folder_1='INBREAST_MASS_IMAGES/Copy_of_Inbreast_Train_224';
 test_folder=strcat('../RU-NET/All_large_patches/',test_folder_1,'/patches');
 truth_folder=strcat('../RU-NET/All_large_patches/',test_folder_1,'/labels/');
 imds = imageDatastore(test_folder)
