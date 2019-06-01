@@ -1,6 +1,4 @@
 # Residual Deep Learning System for Mass Segmentation and Classification in Mammography
-Residual Deep Learning System for Mass Segmentation and Classification in Mammography
-
 
 # Input
 
