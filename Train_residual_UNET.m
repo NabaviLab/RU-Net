@@ -1,6 +1,6 @@
-function [model] = Train_residual_attention_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
+function [model] = Train_R_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
-%Train a residual Attention U-Net model
+%Train a Residual  U-Net model
 
 clc  %
 clear 
@@ -49,14 +49,16 @@ classWeights = median(frequency) ./ frequency;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
 %last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',inverseFrequency,'Name','classification');
-classWeights = median(frequency) ./ frequency
+classWeights = median(frequency) ./ frequency;
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
-notes=strcat('RA_U-NET','_epoches',epoches_str,'_augment',augmentstr);
+notes=strcat('R_U-NET','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%train resuidal attention U-Net model
-[lgraph,networkname]=residual_attention_UNet(numClasses,netwidth,imageSize(1),imageSize(1),beta);
+%train residual U-Net model
+%res_U_net(classes,netWidth,height,width,beta)
+[lgraph,networkname]=res_U_net(numClasses,netwidth,imageSize(1),imageSize(1),beta);
 lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
 lgraph.Layers;
+%%
 
 network_1='network_1_started'
 modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_data_folder,'.mat');
@@ -65,7 +67,7 @@ modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_da
 net= trainNetwork(train,lgraph,options);
 model=fullfile(model_folder_saved,modelname);
 save(model,'net');
-network_1='network_finished';
+network_1='network_1_finished'
 disp('end')
 reset(gpu_to_be_used)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

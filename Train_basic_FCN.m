@@ -1,6 +1,6 @@
-function [model] = Train_residual_attention_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
+function [model] = Train_basic_FCN(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
-%Train a residual Attention U-Net model
+%Train basic FCN model
 
 clc  %
 clear 
@@ -51,11 +51,11 @@ last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',class
 %last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',inverseFrequency,'Name','classification');
 classWeights = median(frequency) ./ frequency
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
-notes=strcat('RA_U-NET','_epoches',epoches_str,'_augment',augmentstr);
+notes=strcat('Basic_FCN','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%train resuidal attention U-Net model
-[lgraph,networkname]=residual_attention_UNet(numClasses,netwidth,imageSize(1),imageSize(1),beta);
-lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
+%train basic FCN model
+lgraph=fcnLayers(imageSize,numClasses,'type','8s');
+lgraph = replaceLayer(lgraph ,'pixelLabels', last_layer);
 lgraph.Layers;
 
 network_1='network_1_started'

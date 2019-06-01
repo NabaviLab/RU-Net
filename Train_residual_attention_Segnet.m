@@ -1,6 +1,6 @@
 function [model] = Train_residual_attention_Segnet(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
-%Train a Reseduail  U-Net model
+%Train a residual Attention Segnet model
 
 clc  %
 clear 
@@ -53,15 +53,11 @@ classWeights = median(frequency) ./ frequency
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
 notes=strcat('RA_Segnet','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%train resuidal attention U-Net model
-%res_U_net(classes,netWidth,height,width,beta)
+%train resuidal attention Segnet model
 [lgraph,networkname]=residual_attention_Segnet(numClasses,netwidth,imageSize(1),imageSize(1),beta);
 lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
 lgraph.Layers;
-%%
-%net=load('../RU-NET/Models/res_U_net_DinAbreastlast_last_R_U-NET45augment0_1_16Copy_of_Inbreast_Train_224.mat');
-%lgraph=net.net
-%lgraph=layerGraph(lgraph)
+
 network_1='network_1_started'
 modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_data_folder,'.mat')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

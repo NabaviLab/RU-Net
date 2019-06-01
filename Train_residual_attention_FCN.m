@@ -1,6 +1,6 @@
 function [model] = Train_residual_attention_FCN(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
-%Train a Reseduail  U-Net model
+%Train a residual Attention FCN model
 
 clc  %
 clear 
@@ -44,26 +44,22 @@ options = training_options(optimizer,Initial_rate,DropFactor,DropPeriod,MaxEpoch
 tbl = countEachLabel(train);
 totalNumberOfPixels = sum(tbl.PixelCount);
 frequency = tbl.PixelCount / totalNumberOfPixels;
-inverseFrequency = 1./frequency
+inverseFrequency = 1./frequency;
 classWeights = median(frequency) ./ frequency;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
 %last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',inverseFrequency,'Name','classification');
-classWeights = median(frequency) ./ frequency
+classWeights = median(frequency) ./ frequency;
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
 notes=strcat('RA_FCN','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%train resuidal attention U-Net model
-%res_U_net(classes,netWidth,height,width,beta)
+%train resuidal attention FCN model
 [lgraph,networkname]=residual_attention_FCN(numClasses,netwidth,imageSize(1),imageSize(1),beta);
 lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
 lgraph.Layers;
-%%
-%net=load('../RU-NET/Models/res_U_net_DinAbreastlast_last_R_U-NET45augment0_1_16Copy_of_Inbreast_Train_224.mat');
-%lgraph=net.net
-%lgraph=layerGraph(lgraph)
+
 network_1='network_1_started'
-modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_data_folder,'.mat')
+modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_data_folder,'.mat');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %start and save model
 net= trainNetwork(train,lgraph,options);

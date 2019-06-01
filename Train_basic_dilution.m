@@ -1,6 +1,6 @@
-function [model] = Train_residual_attention_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
+function [model] = Train_basic_dilution(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
-%Train a residual Attention U-Net model
+%Train basic_dilution model
 
 clc  %
 clear 
@@ -20,6 +20,7 @@ if ~exist('encoderDepth','var'), encoderDepth=5 ; end    %change optimizer
 DropFactor=1e-1;
 DropPeriod=10;
 MiniBatchSize=8;
+numFilters =16;
 netwidth=96;
 beta = 1;
 index=3;
@@ -51,21 +52,47 @@ last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',class
 %last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',inverseFrequency,'Name','classification');
 classWeights = median(frequency) ./ frequency
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
-notes=strcat('RA_U-NET','_epoches',epoches_str,'_augment',augmentstr);
+notes=strcat('basic_dilution','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %train resuidal attention U-Net model
-[lgraph,networkname]=residual_attention_UNet(numClasses,netwidth,imageSize(1),imageSize(1),beta);
-lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
-lgraph.Layers;
 
+lgraph = [
+    imageInputLayer(imageSize)
+    
+    convolution2dLayer(filterSize,numFilters,'DilationFactor',1,'Padding','same')
+    batchNormalizationLayer
+    reluLayer
+    
+    convolution2dLayer(filterSize,numFilters,'DilationFactor',2,'Padding','same')
+    batchNormalizationLayer
+    reluLayer
+    
+    convolution2dLayer(filterSize,numFilters,'DilationFactor',4,'Padding','same')
+    batchNormalizationLayer
+    reluLayer
+        convolution2dLayer(filterSize,numFilters,'DilationFactor',1,'Padding','same')
+    batchNormalizationLayer
+    reluLayer
+    dropoutLayer
+    
+    convolution2dLayer(1,numFilters,'DilationFactor',1,'Padding','same')
+    batchNormalizationLayer
+    reluLayer
+    dropoutLayer
+    convolution2dLayer(1,numClasses)
+    softmaxLayer
+    last_layer
+   ];
+lgraph.Layers;
 network_1='network_1_started'
+networkname='basic_dilution';
 modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_data_folder,'.mat');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %start and save model
 net= trainNetwork(train,lgraph,options);
 model=fullfile(model_folder_saved,modelname);
 save(model,'net');
-network_1='network_finished';
+network_1='network_1_finished'
 disp('end')
 reset(gpu_to_be_used)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,6 +1,6 @@
-function [model] = Train_residual_attention_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
+function [model] = Train_Segnet(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
-%Train a residual Attention U-Net model
+%Train basic Segnet model
 
 clc  %
 clear 
@@ -24,6 +24,7 @@ netwidth=96;
 beta = 1;
 index=3;
 numClasses = 2;
+encoderDepth=5;
 index_str=num2str(index);
 epoches_str=num2str(epoches);
 learnrate_str=num2str(learnrate);
@@ -44,28 +45,27 @@ options = training_options(optimizer,Initial_rate,DropFactor,DropPeriod,MaxEpoch
 tbl = countEachLabel(train);
 totalNumberOfPixels = sum(tbl.PixelCount);
 frequency = tbl.PixelCount / totalNumberOfPixels;
-inverseFrequency = 1./frequency;
+inverseFrequency = 1./frequency
 classWeights = median(frequency) ./ frequency;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
-%last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',inverseFrequency,'Name','classification');
-classWeights = median(frequency) ./ frequency
-last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
-notes=strcat('RA_U-NET','_epoches',epoches_str,'_augment',augmentstr);
+notes=strcat('Segnet','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%train resuidal attention U-Net model
-[lgraph,networkname]=residual_attention_UNet(numClasses,netwidth,imageSize(1),imageSize(1),beta);
-lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
+%train Segnet model
+networkname='Segnet';
+lgraph = segnetLayers(imageSize,numClasses,encoderDepth);
+
+lgraph = replaceLayer(lgraph,'pixelLabels',last_layer);
 lgraph.Layers;
 
 network_1='network_1_started'
-modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_data_folder,'.mat');
+modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_data_folder,'.mat')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %start and save model
 net= trainNetwork(train,lgraph,options);
 model=fullfile(model_folder_saved,modelname);
 save(model,'net');
-network_1='network_finished';
+network_1='network_finished'
 disp('end')
 reset(gpu_to_be_used)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
