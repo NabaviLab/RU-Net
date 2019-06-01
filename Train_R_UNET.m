@@ -1,4 +1,4 @@
-function [outputArg1,outputArg2] = Train_R_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
+function [model] = Train_R_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
 %Train a Reseduail attention U-Net model
 
@@ -68,7 +68,7 @@ modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_da
 %start and save model
 net= trainNetwork(train,lgraph,options);
 model=fullfile(model_folder_saved,modelname);
-save (model,'net');
+save(model,'net');
 network_1='network_1_finished'
 disp('end')
 reset(gpu_to_be_used)
