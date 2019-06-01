@@ -1,4 +1,4 @@
-function [model] = Train_R_UNET(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
+function [model] = Train_residual_attention_FCN(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
 %Train a Reseduail  U-Net model
 
@@ -51,13 +51,13 @@ last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',class
 %last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',inverseFrequency,'Name','classification');
 classWeights = median(frequency) ./ frequency
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
-notes=strcat('R_U-NET','_epoches',epoches_str,'_augment',augmentstr);
+notes=strcat('R_FCN','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %train resuidal attention U-Net model
 %res_U_net(classes,netWidth,height,width,beta)
-[lgraph,networkname]=res_U_net(numClasses,netwidth,imageSize(1),imageSize(1),beta);
+[lgraph,networkname]=residual_attention_FCN_conv_4(numClasses,netwidth,imageSize(1),imageSize(1),beta);
 lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
-lgraph.Layers
+lgraph.Layers;
 %%
 %net=load('../RU-NET/Models/res_U_net_DinAbreastlast_last_R_U-NET45augment0_1_16Copy_of_Inbreast_Train_224.mat');
 %lgraph=net.net
@@ -69,7 +69,7 @@ modelname=strcat(networkname,'_',notes,'_',betastr,'_',netwidthstr,'  ',train_da
 net= trainNetwork(train,lgraph,options);
 model=fullfile(model_folder_saved,modelname);
 save(model,'net');
-network_1='network_1_finished'
+network_1='network_finished';
 disp('end')
 reset(gpu_to_be_used)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
