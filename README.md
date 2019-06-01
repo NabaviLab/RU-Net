@@ -16,6 +16,7 @@ patches folder has mammogram images
 # Output
 
 use Test_semantic_segmentation() to find the accuracy in terms of IOU and Dice index of the trained deep learning model.
+use Train_ResNet() to train a residual deep learning classifier on ground truth maps.
 
 # Training models
 
