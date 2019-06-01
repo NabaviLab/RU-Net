@@ -1,4 +1,4 @@
-function [model] = Train_residual_attention_FCN(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
+function [model] = Train_residual_attention_Segnet(train_data_folder,validate_data_folder,augment,imageSize,epoches,learnrate,MiniBatchSize)
 %Dina Abdelhafiz
 %Train a Reseduail  U-Net model
 
@@ -51,11 +51,11 @@ last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',class
 %last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',inverseFrequency,'Name','classification');
 classWeights = median(frequency) ./ frequency
 last_layer = pixelClassificationLayer('ClassNames',tbl.Name,'ClassWeights',classWeights,'Name','classification');
-notes=strcat('RA_FCN','_epoches',epoches_str,'_augment',augmentstr);
+notes=strcat('RA_Segnet','_epoches',epoches_str,'_augment',augmentstr);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %train resuidal attention U-Net model
 %res_U_net(classes,netWidth,height,width,beta)
-[lgraph,networkname]=residual_attention_FCN(numClasses,netwidth,imageSize(1),imageSize(1),beta);
+[lgraph,networkname]=residual_attention_Segnet(numClasses,netwidth,imageSize(1),imageSize(1),beta);
 lgraph = replaceLayer(lgraph ,'fb classification', last_layer);
 lgraph.Layers;
 %%
